@@ -1,20 +1,18 @@
 package turnoverdoc.telegram.Bot.botapi;
 
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
+import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import turnoverdoc.telegram.model.User;
 import turnoverdoc.telegram.services.UserService;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.io.File;
 
 @Component
 public class ChatBot extends TelegramLongPollingBot {
@@ -43,7 +41,6 @@ public class ChatBot extends TelegramLongPollingBot {
             chatId = update.getMessage().getChatId();
         }
 
-
         User user = userService.findByChatId(chatId);
 
         BotContext context;
@@ -68,6 +65,10 @@ public class ChatBot extends TelegramLongPollingBot {
 
             state.enter(context);
         } while (!state.isInputNeeded());
+
+        user.setStateId(state.ordinal());
+
+        userService.save(user);
 
     }
 

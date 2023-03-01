@@ -3,22 +3,49 @@ package turnoverdoc.telegram.Bot.botapi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import static turnoverdoc.telegram.Bot.BotConstants.START_MESSAGE;
+
 public enum BotState {
 
-    Start {
+    Start(false) {
         @Override
         public void enter(BotContext context) {
-            sendMessage("Start message", context);
+            sendMessage(context, START_MESSAGE);
+        }
+
+        @Override
+        public BotState nextState() {
+            return Menu;
+        }
+
+        @Override
+        protected void handleInput() {
+
+        }
+    },
+    Menu {
+        @Override
+        public void enter(BotContext context) {
+            BotKeyboard botKeyboard = new BotKeyboard();
+            setKeyboardInput(botKeyboard.menuButtons(context.getUser().getChatId()));
+            sendMessage(context, "");
         }
 
         @Override
         public BotState nextState() {
             return null;
         }
+
+        @Override
+        protected void handleInput() {
+
+        }
     };
 
     private static BotState[] states;
     private final boolean isInputNeeded;
+    private SendMessage replyKeyboardMarkup;
+    private SendMessage keyboardInput;
 
     BotState() {
         this.isInputNeeded = true;
@@ -26,6 +53,14 @@ public enum BotState {
 
     BotState(boolean inputNeeded) {
         this.isInputNeeded = inputNeeded;
+    }
+
+    public void setReplyKeyboardMarkup(SendMessage replyKeyboardMarkup) {
+        this.replyKeyboardMarkup = replyKeyboardMarkup;
+    }
+
+    public void setKeyboardInput(SendMessage keyboardInput) {
+        this.keyboardInput = keyboardInput;
     }
 
     /**
@@ -44,16 +79,36 @@ public enum BotState {
         return states[id];
     }
 
-    protected void sendMessage(String text, BotContext context) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(context.getUser().getChatId());
-        sendMessage.setText(text);
+    /**
+     * Отправляет сообщение пользователю
+     * @param context контекст приложения
+     * @param text текст сообщения
+     */
+    protected void sendMessage(BotContext context, String text) {
+        if (replyKeyboardMarkup == null && keyboardInput == null) {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(context.getUser().getChatId());
+            sendMessage.setText(text);
 
-        try {
-            context.getBot().execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+            try {
+                context.getBot().execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        } else if (replyKeyboardMarkup != null) {
+            try {
+                context.getBot().execute(replyKeyboardMarkup);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                context.getBot().execute(keyboardInput);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     public boolean isInputNeeded() {
@@ -67,4 +122,6 @@ public enum BotState {
      * @return Следующее состояние
      */
     public abstract BotState nextState();
+
+    protected abstract void handleInput();
 }

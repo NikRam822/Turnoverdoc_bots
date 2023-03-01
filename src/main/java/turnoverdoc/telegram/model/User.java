@@ -1,13 +1,11 @@
 package turnoverdoc.telegram.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "users")
 public class User {
     @Id
     private Long chatId;
@@ -17,5 +15,8 @@ public class User {
     public User(Long chatId, Integer state) {
         this.chatId = chatId;
         this.stateId = state;
+    }
+
+    public User() {
     }
 }
