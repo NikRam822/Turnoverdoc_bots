@@ -1,10 +1,12 @@
 package turnoverdoc.telegram.Bot.botapi;
 
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import static turnoverdoc.telegram.Bot.BotConstants.START_MESSAGE;
+import static turnoverdoc.telegram.Bot.BotConstants.*;
 
+@Component
 public enum BotState {
 
     Start(false) {
@@ -14,12 +16,12 @@ public enum BotState {
         }
 
         @Override
-        public BotState nextState() {
+        public BotState nextState(BotContext context) {
             return Menu;
         }
 
         @Override
-        protected void handleInput() {
+        protected void handleInput(BotContext context) {
 
         }
     },
@@ -27,17 +29,98 @@ public enum BotState {
         @Override
         public void enter(BotContext context) {
             BotKeyboard botKeyboard = new BotKeyboard();
-            setKeyboardInput(botKeyboard.menuButtons(context.getUser().getChatId()));
+            setKeyboardInput(botKeyboard.menuButtons(context.getUserTelegram().getChatId()));
             sendMessage(context, "");
         }
 
         @Override
-        public BotState nextState() {
+        public BotState nextState(BotContext context) {
+            switch (context.getUserTelegram().getMenuFunction()) {
+                case CREATE_ORDER_BUTTON:
+                    if (context.getUserService().isTelegramLinkedToProfile(context.getCallBack().getFrom().getUserName())) {
+                        return CreateOrder;
+                    }
+                    sendMessage(context, TELEGRAM_NOT_LINKED);
+                    return Menu;
+                case BOT_FEATURES_BUTTON:
+                    return BotFeatures;
+                case ABOUT_COMPANY_BUTTON:
+                    return AboutCompany;
+                case USERS_ORDERS_BUTTON:
+                    return UsersOrders;
+                default:
+                    sendMessage(context, INVALID_INPUT);
+                    return Menu;
+            }
+        }
+
+        @Override
+        protected void handleInput(BotContext context) {
+            context.getUserTelegram().setMenuFunction(context.getCallBack().getData());
+        }
+    },
+    CreateOrder {
+        @Override
+        public void enter(BotContext context) {
+            context.getOrderService().createOrder(context.getCallBack().getFrom().getUserName());
+            sendMessage(context, ORDER_CONTACT_RECEIVED);
+        }
+
+        @Override
+        public BotState nextState(BotContext context) {
             return null;
         }
 
         @Override
-        protected void handleInput() {
+        protected void handleInput(BotContext context) {
+
+        }
+    },
+    BotFeatures {
+        @Override
+        public void enter(BotContext context) {
+            sendMessage(context, BOT_FEATURES_TEXT);
+        }
+
+        @Override
+        public BotState nextState(BotContext context) {
+            return Menu;
+        }
+
+        @Override
+        protected void handleInput(BotContext context) {
+
+        }
+    },
+    AboutCompany {
+        @Override
+        public void enter(BotContext context) {
+            sendMessage(context, ABOUT_COMPANY_TEXT);
+        }
+
+        @Override
+        public BotState nextState(BotContext context) {
+            return Menu;
+        }
+
+        @Override
+        protected void handleInput(BotContext context) {
+
+        }
+    },
+    UsersOrders {
+        @Override
+        public void enter(BotContext context) {
+
+        }
+
+        @Override
+        public BotState nextState(BotContext context) {
+            return null;
+        }
+
+        @Override
+        protected void handleInput(BotContext context) {
 
         }
     };
@@ -87,7 +170,7 @@ public enum BotState {
     protected void sendMessage(BotContext context, String text) {
         if (replyKeyboardMarkup == null && keyboardInput == null) {
             SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(context.getUser().getChatId());
+            sendMessage.setChatId(context.getUserTelegram().getChatId());
             sendMessage.setText(text);
 
             try {
@@ -121,7 +204,7 @@ public enum BotState {
      * Переходит в следующее состояние
      * @return Следующее состояние
      */
-    public abstract BotState nextState();
+    public abstract BotState nextState(BotContext context);
 
-    protected abstract void handleInput();
+    protected abstract void handleInput(BotContext context);
 }

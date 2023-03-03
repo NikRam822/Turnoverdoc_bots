@@ -44,7 +44,7 @@ public class UserKeyboard {
         replyKeyboardMarkup.setKeyboard(keyboardRows);
 
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(context.getUser().getChatId());
+        sendMessage.setChatId(context.getUserTelegram().getChatId());
         sendMessage.setText(MENU_MESSAGE);
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
 

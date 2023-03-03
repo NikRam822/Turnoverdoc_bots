@@ -1,22 +1,57 @@
 package turnoverdoc.telegram.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users")
+@SQLDelete(sql="UPDATE users SET status = 'DELETED' where id=?")
 public class User {
     @Id
-    private Long chatId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    private Integer stateId;
+    @Column(name = "username")
+    private String username;
 
-    public User(Long chatId, Integer state) {
-        this.chatId = chatId;
-        this.stateId = state;
-    }
+    @Column(name = "password")
+    private String password;
 
-    public User() {
-    }
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "second_name")
+    private String secondName;
+
+    @Column(name = "surname")
+    private String surname;
+
+    private String email;
+
+    private String telegramUsername;
+
+    @OneToMany(mappedBy = "user")
+    private Collection<Order> order;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private UserStatus userStatus;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+    private List<Role> roles;
 }

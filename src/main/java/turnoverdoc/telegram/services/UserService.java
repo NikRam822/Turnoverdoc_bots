@@ -1,24 +1,11 @@
 package turnoverdoc.telegram.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import turnoverdoc.telegram.model.User;
-import turnoverdoc.telegram.repositories.UserRepository;
+import turnoverdoc.telegram.model.UserTelegram;
 
-@Service
-public class UserService {
-    private UserRepository userRepository;
-
-    @Autowired
-    private void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public User findByChatId(Long chatId) {
-        return userRepository.findByChatId(chatId);
-    }
-
-    public User save(User user) {
-        return userRepository.save(user);
-    }
+public interface UserService {
+    UserTelegram findByChatId(Long chatId);
+    UserTelegram save(UserTelegram userTelegram);
+    boolean isTelegramLinkedToProfile(String username);
+    User findByTelegramUsername(String username);
 }
