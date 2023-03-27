@@ -8,6 +8,8 @@ import turnoverdoc.telegram.services.ContactService;
 import turnoverdoc.telegram.services.OrderService;
 import turnoverdoc.telegram.services.UserService;
 
+import java.util.List;
+
 @Service
 public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
@@ -44,5 +46,15 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.CONTACT_RECEIVED);
 
         orderRepository.save(order);
+    }
+
+    @Override
+    public List<Order> findByUserId(String username) {
+        User user = userService.findByTelegramUsername(username);
+
+        if (user != null) {
+            return orderRepository.findByUserId(user.getId());
+        }
+        return null;
     }
 }

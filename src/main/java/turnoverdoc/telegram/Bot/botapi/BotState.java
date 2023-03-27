@@ -3,6 +3,7 @@ package turnoverdoc.telegram.Bot.botapi;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import turnoverdoc.telegram.Bot.BotConstants;
 
 import static turnoverdoc.telegram.Bot.BotConstants.*;
 
@@ -111,12 +112,13 @@ public enum BotState {
     UsersOrders {
         @Override
         public void enter(BotContext context) {
-
+            sendMessage(context, BotConstants.getAllUsersOrdersMessage(context.getOrderService()
+                    .findByUserId(context.getUserTelegram().getUsername())));
         }
 
         @Override
         public BotState nextState(BotContext context) {
-            return null;
+            return Menu;
         }
 
         @Override

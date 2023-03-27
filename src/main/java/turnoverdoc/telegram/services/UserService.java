@@ -8,4 +8,5 @@ public interface UserService {
     UserTelegram save(UserTelegram userTelegram);
     boolean isTelegramLinkedToProfile(String username);
     User findByTelegramUsername(String username);
+    UserTelegram findByUsername(String username);
 }

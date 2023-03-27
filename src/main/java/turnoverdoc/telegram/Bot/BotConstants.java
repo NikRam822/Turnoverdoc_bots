@@ -1,5 +1,10 @@
 package turnoverdoc.telegram.Bot;
 
+import turnoverdoc.telegram.model.Order;
+import turnoverdoc.telegram.model.OrderStatus;
+
+import java.util.List;
+
 public class BotConstants {
     public static final String START_MESSAGE = "Я - бот Turnoverdoc, который поможет вам в оформлении заявок. " +
             "С помощью меня вы можете узнать статус уже существующих заявок и подписаться на уведомления об их изменении, задать любой вопрос в техподдержку и многое другое.";
@@ -22,4 +27,23 @@ public class BotConstants {
                 3) Узнать подробнее о статусе любой из ваших созданных заявок""";
     }
 
+    public static String getBotNotifyStatusMessage(OrderStatus orderStatus, String applicationId) {
+        return "Обновлен статус по вашей заявке " + applicationId + "\n" +
+                "Текущий статус: " + orderStatus.getStatusName() + "\n" +
+                orderStatus.getStatusDescription();
+    }
+
+    public static String getAllUsersOrdersMessage(List<Order> orders) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 1; i <= orders.size(); i++) {
+            stringBuilder.append(i).append(". ").append(orders.get(i).getId()).append("\n");
+            stringBuilder.append("Текущий статус: ").append(orders.get(i).getStatus().getStatusName());
+            if (i != orders.size() - 1) {
+                stringBuilder.append("\n");
+            }
+        }
+
+        return stringBuilder.toString();
+    }
 }

@@ -13,6 +13,8 @@ public class UserTelegram {
     private Integer stateId;
     private String menuFunction;
 
+    private String username;
+
     public UserTelegram(Long chatId, Integer state) {
         this.chatId = chatId;
         this.stateId = state;
