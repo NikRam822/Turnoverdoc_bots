@@ -69,7 +69,7 @@ public enum BotState {
 
         @Override
         public BotState nextState(BotContext context) {
-            return null;
+            return Menu;
         }
 
         @Override
