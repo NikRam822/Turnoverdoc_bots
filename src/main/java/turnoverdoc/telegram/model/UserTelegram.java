@@ -15,9 +15,10 @@ public class UserTelegram {
 
     private String username;
 
-    public UserTelegram(Long chatId, Integer state) {
+    public UserTelegram(Long chatId, Integer state, String username) {
         this.chatId = chatId;
         this.stateId = state;
+        this.username = username;
     }
 
     public UserTelegram() {

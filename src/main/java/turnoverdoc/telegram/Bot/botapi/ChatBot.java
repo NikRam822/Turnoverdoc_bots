@@ -57,7 +57,7 @@ public class ChatBot extends TelegramLongPollingBot {
         if (userTelegram == null) {
             state = BotState.getInitialState();
 
-            userTelegram = new UserTelegram(update.getMessage().getChatId(), state.ordinal());
+            userTelegram = new UserTelegram(update.getMessage().getChatId(), state.ordinal(), update.getMessage().getFrom().getUserName());
             userService.save(userTelegram);
 
             context = BotContext.of(this, text, userTelegram, update.getCallbackQuery(), userService, orderService);

@@ -33,12 +33,19 @@ public class BotConstants {
                 orderStatus.getStatusDescription();
     }
 
+    // TODO: replace this method to another class
     public static String getAllUsersOrdersMessage(List<Order> orders) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (int i = 1; i <= orders.size(); i++) {
-            stringBuilder.append(i).append(". ").append(orders.get(i).getId()).append("\n");
-            stringBuilder.append("Текущий статус: ").append(orders.get(i).getStatus().getStatusName());
+        if (orders == null) {
+            // TODO: change text
+            stringBuilder.append("Мы не нашли ваши заявки");
+            return stringBuilder.toString();
+        }
+        for (int i = 0; i < orders.size(); i++) {
+            stringBuilder.append(i + 1).append(". ").append(orders.get(i).getId()).append("\n");
+            stringBuilder.append("Текущий статус: ").append(orders.get(i).getStatus().getStatusName()).append("\n");
+            stringBuilder.append(orders.get(i).getStatus().getStatusDescription());
             if (i != orders.size() - 1) {
                 stringBuilder.append("\n");
             }

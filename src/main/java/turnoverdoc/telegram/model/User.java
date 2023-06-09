@@ -38,12 +38,12 @@ public class User {
     @Column(name = "surname")
     private String surname;
 
-    private String email;
-
-    private String telegramUsername;
-
     @OneToMany(mappedBy = "user")
     private Collection<Order> order;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contact_id", referencedColumnName = "id")
+    private Contact contact;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
