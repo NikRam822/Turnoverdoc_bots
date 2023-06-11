@@ -20,11 +20,10 @@ public class BotConstants {
     public static final String TELEGRAM_NOT_LINKED = "Ваш аккаунт телеграма не привязан к профилю. Оформление через бота доступно только для привязанных аккаунтов";
 
     private static String getBotFeaturesText() {
-        return """
-                С помощью бота вы можете:
-                1) Узнать о компании
-                2) Подписаться на уведомления о смене статуса ваших заявок
-                3) Узнать подробнее о статусе любой из ваших созданных заявок""";
+        return "С помощью бота вы можете: \n" +
+                "1) Узнать о компании\n" +
+                "2) Подписаться на уведомления о смене статуса ваших заявок\n" +
+                "3) Узнать подробнее о статусе любой из ваших созданных заявок";
     }
 
     public static String getBotNotifyStatusMessage(OrderStatus orderStatus, String applicationId) {

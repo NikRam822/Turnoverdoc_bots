@@ -1,11 +1,11 @@
 package turnoverdoc.telegram.repositories;
 
-import jakarta.transaction.Transactional;
-import org.glassfish.jersey.process.internal.RequestScoped;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import turnoverdoc.telegram.model.User;
+
+import javax.transaction.Transactional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
