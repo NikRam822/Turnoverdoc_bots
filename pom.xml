@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>turnoverdoc</groupId>
-	<artifactId>telegram</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>turnover_telegram</artifactId>
+	<version>0.1.0</version>
 	<name>telegram</name>
 	<description>Telegram bot for Turnoverdoc</description>
 	<properties>

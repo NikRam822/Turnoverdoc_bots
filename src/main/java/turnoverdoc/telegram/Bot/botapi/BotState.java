@@ -1,5 +1,6 @@
 package turnoverdoc.telegram.Bot.botapi;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -7,6 +8,7 @@ import turnoverdoc.telegram.Bot.BotConstants;
 
 import static turnoverdoc.telegram.Bot.BotConstants.*;
 
+@Slf4j
 @Component
 public enum BotState {
 
@@ -38,10 +40,14 @@ public enum BotState {
         public BotState nextState(BotContext context) {
             switch (context.getUserTelegram().getMenuFunction()) {
                 case CREATE_ORDER_BUTTON:
+                    log.info("Create order enter");
                     if (context.getUserService().isTelegramLinkedToProfile(context.getCallBack().getFrom().getUserName())) {
+                        log.info("telegram is linked to profile");
                         return CreateOrder;
                     }
+                    log.info("telegram is not linked");
                     sendMessage(context, TELEGRAM_NOT_LINKED);
+                    log.info("send message to user");
                     return Menu;
                 case BOT_FEATURES_BUTTON:
                     return BotFeatures;
@@ -57,14 +63,17 @@ public enum BotState {
 
         @Override
         protected void handleInput(BotContext context) {
-            context.getUserTelegram().setMenuFunction(context.getCallBack().getData());
+            if (context.getCallBack() != null) {
+                context.getUserTelegram().setMenuFunction(context.getCallBack().getData());
+            }
         }
     },
-    CreateOrder {
+    CreateOrder(false) {
         @Override
         public void enter(BotContext context) {
             context.getOrderService().createOrder(context.getCallBack().getFrom().getUserName());
             sendMessage(context, ORDER_CONTACT_RECEIVED);
+            log.info("order has been created");
         }
 
         @Override
@@ -77,7 +86,7 @@ public enum BotState {
 
         }
     },
-    BotFeatures {
+    BotFeatures(false) {
         @Override
         public void enter(BotContext context) {
             sendMessage(context, BOT_FEATURES_TEXT);
@@ -93,7 +102,7 @@ public enum BotState {
 
         }
     },
-    AboutCompany {
+    AboutCompany(false) {
         @Override
         public void enter(BotContext context) {
             sendMessage(context, ABOUT_COMPANY_TEXT);
@@ -109,7 +118,7 @@ public enum BotState {
 
         }
     },
-    UsersOrders {
+    UsersOrders(false) {
         @Override
         public void enter(BotContext context) {
             sendMessage(context, BotConstants.getAllUsersOrdersMessage(context.getOrderService()
@@ -170,12 +179,13 @@ public enum BotState {
      * @param text текст сообщения
      */
     protected void sendMessage(BotContext context, String text) {
-        if (replyKeyboardMarkup == null && keyboardInput == null) {
+        if (!text.equals("")) {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(context.getUserTelegram().getChatId());
             sendMessage.setText(text);
 
             try {
+                log.info("send message: " + text);
                 context.getBot().execute(sendMessage);
             } catch (TelegramApiException e) {
                 e.printStackTrace();

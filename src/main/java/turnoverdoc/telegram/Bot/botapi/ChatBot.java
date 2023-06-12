@@ -1,6 +1,7 @@
 package turnoverdoc.telegram.Bot.botapi;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import turnoverdoc.telegram.model.UserTelegram;
 import turnoverdoc.telegram.services.OrderService;
 import turnoverdoc.telegram.services.UserService;
 
+@Slf4j
 @Component
 public class ChatBot extends TelegramLongPollingBot {
     private String botName;
@@ -74,6 +76,7 @@ public class ChatBot extends TelegramLongPollingBot {
             state = state.nextState(context);
 
             state.enter(context);
+            log.info("enter to state: " + state.name());
         } while (!state.isInputNeeded());
 
         userTelegram.setStateId(state.ordinal());
